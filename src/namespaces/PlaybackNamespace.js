@@ -26,7 +26,6 @@ export default class PlaybackNamespace extends GMusicNamespace {
   constructor(...args) {
     super(...args);
 
-    this._setupExtraFeelingLuckyButton();
     this._mapSelectors(playbackSelectors);
     this._hookEvents();
 
@@ -37,28 +36,20 @@ export default class PlaybackNamespace extends GMusicNamespace {
     ]);
   }
 
-  _setupExtraFeelingLuckyButton() {
-    this.iflButton = document.createElement('gpm-ifl-button');
-    this.iflButton.style.display = 'none';
-    document.body.append(this.iflButton);
-  }
-
   _textContent(el, defaultText) {
     return el ? el.textContent || defaultText : defaultText;
   }
 
   getCurrentTime() {
-    return this._progressEl.value;
+    return Math.round(this._videoEl.currentTime * 1000);
   }
 
   setCurrentTime(milliseconds) {
-    this._progressEl.value = milliseconds;
-    // DEV: Dispatch a new change event to simulate user interaction
-    this._progressEl.dispatchEvent(new window.UIEvent('change'));
+    this._videoEl.currentTime = milliseconds / 1000;
   }
 
   getTotalTime() {
-    return this._progressEl.max;
+    return Math.round(this._videoEl.duration * 1000);
   }
 
   getCurrentTrack() {
@@ -80,26 +71,15 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   isPlaying() {
-    return document.querySelector(controlsSelectors.playPause).classList.contains('playing');
+    return !this._videoEl.paused;
   }
 
   getPlaybackState() {
-    const playButton = document.querySelector(controlsSelectors.playPause);
-
-    if (playButton.classList.contains('playing')) {
+    if (this._videoEl.paused) {
+      return PlaybackNamespace.ENUMS.PlaybackStatus.PAUSED;
+    } else {
       return PlaybackNamespace.ENUMS.PlaybackStatus.PLAYING;
     }
-    // Play/Pause element states:
-    //   PLAYING: {__data__: {icon: 'av:pause-circle-filled'}, disabled: false}
-    //   PAUSED: {__data__: {icon: 'av:sj:pause-circle-fill'}, disabled: false}
-    //   STOPPED: {__data__: {icon: 'av:sj:play-circle-fill'}, disabled: true}
-    if (!playButton.disabled) {
-      if (playButton.__data__.icon === 'av:pause-circle-filled') {
-        return PlaybackNamespace.ENUMS.PlaybackStatus.PLAYING;
-      }
-      return PlaybackNamespace.ENUMS.PlaybackStatus.PAUSED;
-    }
-    return PlaybackNamespace.ENUMS.PlaybackStatus.STOPPED;
   }
 
   playPause() {
@@ -115,18 +95,15 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   getShuffle() {
-    if (document.querySelector(controlsSelectors.shuffle).classList.contains('active')) {
-      return PlaybackNamespace.ENUMS.ShuffleStatus.ALL_SHUFFLE;
-    }
     return PlaybackNamespace.ENUMS.ShuffleStatus.NO_SHUFFLE;
   }
 
   setShuffle(mode) {
     assert(Object.keys(PlaybackNamespace.ENUMS.ShuffleStatus).indexOf(mode) !== -1,
       `Expected shuffle mode "${mode}" to be inside ${JSON.stringify(Object.keys(PlaybackNamespace.ENUMS.ShuffleStatus))} but it wasn't`);
-    while (this.getShuffle() !== mode) {
-      this.toggleShuffle();
-    }
+    if (mode === this.getShuffle()) return;
+
+    this.toggleShuffle();
   }
 
   toggleShuffle() {
@@ -134,14 +111,12 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   getRepeat() {
-    const repeatEl = document.querySelector(controlsSelectors.repeat);
-    // Repeat element states:
-    //   SINGLE_REPEAT: {classList: ['active'], __data__: {icon: 'av:repeat-one'}}
-    //   LIST_REPEAT: {classList: ['active'], __data__: {icon: 'av:repeat'}}
-    //   NO_REPEAT: {classList: [], __data__: {icon: 'av:repeat'}}
-    if (repeatEl.__data__.icon === 'av:repeat-one') {
+    const bar = document.querySelector(nowPlayingSelectors.playerBar);
+    const repeatMode = bar.getAttribute('repeat-mode_');
+
+    if (repeatMode === 'ONE') {
       return PlaybackNamespace.ENUMS.RepeatStatus.SINGLE_REPEAT;
-    } else if (repeatEl.classList.contains('active')) {
+    } else if (repeatMode === 'ALL') {
       return PlaybackNamespace.ENUMS.RepeatStatus.LIST_REPEAT;
     }
     return PlaybackNamespace.ENUMS.RepeatStatus.NO_REPEAT;
@@ -150,8 +125,14 @@ export default class PlaybackNamespace extends GMusicNamespace {
   setRepeat(mode) {
     assert(Object.keys(PlaybackNamespace.ENUMS.RepeatStatus).indexOf(mode) !== -1,
       `Expected repeat mode "${mode}" to be inside ${JSON.stringify(Object.keys(PlaybackNamespace.ENUMS.RepeatStatus))} but it wasn't`);
-    while (this.getRepeat() !== mode) {
-      this.toggleRepeat();
+
+    const bar = document.querySelector(nowPlayingSelectors.playerBar);
+    if (mode === PlaybackNamespace.ENUMS.RepeatStatus.SINGLE_REPEAT) {
+      bar.setAttribute('repeat-mode_', 'ONE');
+    } else if (mode === PlaybackNamespace.ENUMS.RepeatStatus.LIST_REPEAT) {
+      bar.setAttribute('repeat-mode_', 'ALL');
+    } else {
+      bar.setAttribute('repeat-mode_', 'NONE');
     }
   }
 
@@ -160,24 +141,23 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   isPodcast() {
-    return document.querySelector(podcastSelectors.podcast).classList.contains('podcast');
+    return false;
   }
 
   rewindTen() {
-    click(document.querySelector(controlsSelectors.rewindTen));
+    // TODO: Implement?
   }
 
   forwardThirty() {
-    click(document.querySelector(controlsSelectors.forwardThirty));
+    // TODO: Implement?
   }
 
-  // Taken from the Google Play Music page
   toggleVisualization() {
-    window.SJBpost('toggleVisualization'); // eslint-disable-line
+    // TODO: Implement?
   }
 
   startFeelingLucky() {
-    click(this.iflButton);
+    // TODO: Implement?
   }
 
   _hookEvents() {
@@ -196,7 +176,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
         for (let i = 0; i < m.addedNodes.length; i++) {
           // DEV: We can encounter a text node, verify we have a `classList` to assert against
           const target = m.addedNodes[i];
-          if (target.classList && target.classList.contains('now-playing-info-wrapper')) {
+          if (target && target.parentElement && target.parentElement.parentElement.classList.contains('content-info-wrapper')) {
             const currentTrack = this.getCurrentTrack();
             // Make sure that this is the first of the notifications for the
             // insertion of the song information elements.
@@ -249,7 +229,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
     let lastMode;
     new MutationObserver((mutations) => {
       mutations.forEach((m) => {
-        if (m.target.dataset.id === 'play-pause') {
+        if (m.target.classList.contains('play-pause-button')) {
           const currentMode = this.getPlaybackState();
 
           // If the mode has changed, then update it
@@ -262,26 +242,5 @@ export default class PlaybackNamespace extends GMusicNamespace {
     }).observe(document.querySelector(controlsSelectors.playPause), {
       attributes: true,
     });
-
-    // Podcast Event
-    const elPodcastFwd = document.querySelector(controlsSelectors.forwardThirty);
-    if (elPodcastFwd) {
-      let lastIsPodcast;
-      new MutationObserver((mutations) => {
-        mutations.forEach((m) => {
-          if (m.target.dataset.id === 'forward-30') {
-            const currentIsPodcast = this.isPodcast();
-
-            // If the mode has changed, then update it
-            if (currentIsPodcast !== lastIsPodcast) {
-              this.emit('change:podcast', currentIsPodcast);
-              lastIsPodcast = currentIsPodcast;
-            }
-          }
-        });
-      }).observe(elPodcastFwd, {
-        attributes: true,
-      });
-    }
   }
 }

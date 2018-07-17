@@ -14,21 +14,16 @@ export default class RatingNamespace extends GMusicNamespace {
     this.addMethods(['getRating', 'toggleThumbsUp', 'toggleThumbsDown', 'setRating', 'resetRating']);
   }
 
-  _isElSelected(el) {
-    // DEV: We don't use English only strings (e.g. "Undo") to support i18n
-    return el.__data__.icon === 'thumb-up' || el.__data__.icon === 'thumb-down';
-  }
-
   getRating() {
-    const thumbEls = document.querySelectorAll(ratingSelectors.thumbs);
-    assert(thumbEls.length, `Failed to find thumb elements for rating "${ratingSelectors.thumbs}"`);
-
-    for (let i = 0; i < thumbEls.length; i++) {
-      if (this._isElSelected(thumbEls[i])) {
-        return thumbEls[i].dataset.rating;
-      }
+    const container = document.querySelector(ratingSelectors.ratingContainer);
+    switch (container.getAttribute('like-status')) {
+      case 'DISLIKE':
+        return '1';
+      case 'LIKE':
+        return '5';
+      default:
+        return '0';
     }
-    return '0';
   }
 
   toggleThumbsUp() {
@@ -40,19 +35,23 @@ export default class RatingNamespace extends GMusicNamespace {
   }
 
   setRating(rating) {
-    const ratingEl = document.querySelector(ratingSelectors.thumbsFormat.replace('{rating}', rating));
-
-    if (ratingEl && !this._isElSelected(ratingEl)) {
-      click(ratingEl);
+    const currentRating = this.getRating();
+    if (`${rating}` === currentRating) return;
+    if (`${rating}` === '1') {
+      this.toggleThumbsDown();
+    } else if (`${rating}` === '5') {
+      this.toggleThumbsUp();
+    } else {
+      if (currentRating === '1') {
+        this.toggleThumbsDown();
+      } else {
+        this.toggleThumbsUp();
+      }
     }
   }
 
   resetRating() {
-    const ratingEl = document.querySelector(ratingSelectors.thumbsFormat.replace('{rating}', this.getRating()));
-
-    if (ratingEl && this._isElSelected(ratingEl)) {
-      click(ratingEl);
-    }
+    this.setRating('0');
   }
 
   _hookEvents() {

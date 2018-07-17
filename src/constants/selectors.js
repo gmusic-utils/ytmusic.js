@@ -1,9 +1,10 @@
 export const volumeSelectors = {
-  volumeSlider: '#material-vslider',
+  volumeSlider: '.volume-slider',
 };
 
 export const playbackSelectors = {
-  progress: '#material-player-progress',
+  video: 'video.video-stream',
+  progress: 'ytmusic-player-bar > paper-slider.ytmusic-player-bar',
 };
 
 export const podcastSelectors = {
@@ -11,29 +12,26 @@ export const podcastSelectors = {
 };
 
 export const nowPlayingSelectors = {
-  albumArt: '#playerBarArt',
-  albumName: '.player-album',
-  artistName: '#player-artist',
-  nowPlayingContainer: '#playerSongInfo',
-  infoWrapper: '.now-playing-info-wrapper',
-  title: '#currently-playing-title',
+  playerBar: 'ytmusic-player-bar',
+  albumArt: 'img.ytmusic-player-bar',
+  albumName: '.byline a:nth-child(2)',
+  artistName: '.byline a:nth-child(1)',
+  nowPlayingContainer: '.middle-controls',
+  infoWrapper: '.content-info-wrapper',
+  title: '.title',
 };
 
 export const controlsSelectors = {
-  forward: '[data-id="forward"]',
-  playPause: '[data-id="play-pause"]',
-  repeat: '[data-id="repeat"]',
-  rewind: '[data-id="rewind"]',
-  shuffle: '#player [data-id="shuffle"]',
-  progress: '#material-player-progress',
-  forwardThirty: '[data-id="forward-30"]',
-  rewindTen: '[data-id="rewind-10"]',
+  forward: '.left-controls .next-button',
+  playPause: '.left-controls .play-pause-button',
+  repeat: '.right-controls .repeat',
+  rewind: '.left-controls .previous-button',
+  shuffle: '.right-controls .shuffle',
 };
 
 export const ratingSelectors = {
-  ratingContainer: '#playerSongInfo',
-  thumbs: '#player .player-rating-container [icon^="sj:thumb-"][data-rating]',
-  thumbsUp: '#player .player-rating-container [icon^="sj:thumb-"][data-rating="5"]',
-  thumbsDown: '#player .player-rating-container [icon^="sj:thumb-"][data-rating="1"]',
-  thumbsFormat: '#player .player-rating-container [icon^="sj:thumb-"][data-rating="{rating}"]',
+  ratingContainer: 'ytmusic-like-button-renderer',
+  thumbs: 'paper-icon-button',
+  thumbsUp: '.like',
+  thumbsDown: '.dislike',
 };

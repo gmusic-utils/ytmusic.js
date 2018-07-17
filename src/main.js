@@ -1,8 +1,8 @@
-import GMusic from './gmusic';
+import YTMusic from './ytmusic';
 import GMusicNamespace from './GMusicNamespace';
 import Track from './structs/Track';
 
-GMusic.GMusicNamespace = GMusicNamespace;
-GMusic.Track = Track;
+YTMusic.GMusicNamespace = GMusicNamespace;
+YTMusic.Track = Track;
 
-module.exports = GMusic;
+module.exports = YTMusic;

@@ -9,7 +9,7 @@ import VolumeNamespace from './namespaces/VolumeNamespace';
 
 const namespaces = {};
 
-class GMusic extends Emitter {
+class YTMusic extends Emitter {
   static SELECTORS = { volumeSelectors, playbackSelectors, nowPlayingSelectors, controlsSelectors, ratingSelectors };
 
   constructor() {
@@ -26,13 +26,13 @@ class GMusic extends Emitter {
   static addNamespace(namespaceName, namespaceClass) {
     namespaces[namespaceName] = namespaces[namespaceName] || [];
     namespaces[namespaceName].push(namespaceClass);
-    Object.assign(GMusic, namespaceClass.ENUMS || {});
+    Object.assign(YTMusic, namespaceClass.ENUMS || {});
   }
 }
 
-GMusic.addNamespace('extras', ExtrasNamespace);
-GMusic.addNamespace('playback', PlaybackNamespace);
-GMusic.addNamespace('rating', RatingNamespace);
-GMusic.addNamespace('volume', VolumeNamespace);
+YTMusic.addNamespace('extras', ExtrasNamespace);
+YTMusic.addNamespace('playback', PlaybackNamespace);
+YTMusic.addNamespace('rating', RatingNamespace);
+YTMusic.addNamespace('volume', VolumeNamespace);
 
-export default GMusic;
+export default YTMusic;

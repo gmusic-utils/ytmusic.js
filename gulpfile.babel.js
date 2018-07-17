@@ -19,16 +19,16 @@ gulp.task('transpile', () =>
 gulp.task('browserify', ['transpile'], () =>
   gulp.src('./build/main.js')
     .pipe(browserify({
-      standalone: 'GMusic'
+      standalone: 'YTMusic',
     }))
-    .pipe(rename('gmusic.js'))
+    .pipe(rename('ytmusic.js'))
     .pipe(gulp.dest('./dist'))
 );
 
 gulp.task('uglify', ['browserify'], () =>
-  gulp.src('./dist/gmusic.js')
+  gulp.src('./dist/ytmusic.js')
     .pipe(uglify())
-    .pipe(rename('gmusic.min.js'))
+    .pipe(rename('ytmusic.min.js'))
     .pipe(gulp.dest('./dist'))
 );
 

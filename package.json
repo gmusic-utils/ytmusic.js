@@ -1,7 +1,7 @@
 {
-  "name": "gmusic.js",
-  "description": "Browser-side JS library for controlling Google Music",
-  "version": "6.1.4",
+  "name": "ytmusic.js",
+  "description": "Browser-side JS library for controlling YouTube Music",
+  "version": "6.1.11",
   "homepage": "https://github.com/gmusic-utils/gmusic.js",
   "author": {
     "name": "Todd Wolfson",
@@ -16,7 +16,7 @@
     "url": "https://github.com/gmusic-utils/gmusic.js/issues"
   },
   "license": "Unlicense",
-  "main": "dist/gmusic.js",
+  "main": "dist/ytmusic.js",
   "engines": {
     "node": ">= 0.8.0"
   },
