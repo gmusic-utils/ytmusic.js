@@ -49,7 +49,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   getTotalTime() {
-    return Math.round(document.querySelector(nowPlayingSelectors.playerBar).__data__.durationSeconds_ * 1000);
+    return Math.round(document.querySelector(nowPlayingSelectors.playerBar).__data__.seekableEndSeconds_ * 1000);
   }
 
   getCurrentTrack() {
