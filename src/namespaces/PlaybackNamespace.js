@@ -2,7 +2,7 @@ import assert from 'assert';
 
 import GMusicNamespace from '../GMusicNamespace';
 import Track from '../structs/Track';
-import { controlsSelectors, playbackSelectors, nowPlayingSelectors, podcastSelectors } from '../constants/selectors';
+import { controlsSelectors, playbackSelectors, nowPlayingSelectors } from '../constants/selectors';
 import click from '../utils/click';
 
 export default class PlaybackNamespace extends GMusicNamespace {
@@ -49,16 +49,16 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   getTotalTime() {
-    return Math.round(this._videoEl.duration * 1000);
+    return Math.round(document.querySelector(nowPlayingSelectors.playerBar).__data__.seekableEndSeconds_ * 1000);
   }
 
   getCurrentTrack() {
-    const nowPlayingContainer = document.querySelector(nowPlayingSelectors.nowPlayingContainer);
+    const playerBar = document.querySelector(nowPlayingSelectors.playerBar);
     const track = new Track({
       id: null,
-      title: this._textContent(nowPlayingContainer.querySelector(nowPlayingSelectors.title), 'Unknown Title'),
-      artist: this._textContent(nowPlayingContainer.querySelector(nowPlayingSelectors.artistName), 'Unknown Artist'),
-      album: this._textContent(nowPlayingContainer.querySelector(nowPlayingSelectors.albumName), 'Unknown Album'),
+      title: playerBar.__data__.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
+      artist: playerBar.__data__.playerPageWatchMetadata_.byline.runs[0].text || 'Unknown Artist',
+      album: playerBar.__data__.playerPageWatchMetadata_.albumName.runs[0].text || 'Unknown Album',
       albumArt: (document.querySelector(nowPlayingSelectors.albumArt) || { src: null }).src,
       duration: this.getTotalTime(),
     });
@@ -169,30 +169,6 @@ export default class PlaybackNamespace extends GMusicNamespace {
       });
     });
 
-    // Change Track Event
-    let lastTrack;
-    new MutationObserver((mutations) => {
-      mutations.forEach((m) => {
-        for (let i = 0; i < m.addedNodes.length; i++) {
-          // DEV: We can encounter a text node, verify we have a `classList` to assert against
-          const target = m.addedNodes[i];
-          if (target && target.parentElement && target.parentElement.parentElement.classList.contains('content-info-wrapper')) {
-            const currentTrack = this.getCurrentTrack();
-            // Make sure that this is the first of the notifications for the
-            // insertion of the song information elements.
-            if (!currentTrack.equals(lastTrack)) {
-              this.emit('change:track', currentTrack);
-
-              lastTrack = currentTrack;
-            }
-          }
-        }
-      });
-    }).observe(document.querySelector(nowPlayingSelectors.nowPlayingContainer), {
-      childList: true,
-      subtree: true,
-    });
-
     // Change Shuffle Event
     let lastShuffle;
     new MutationObserver((mutations) => {
@@ -242,5 +218,25 @@ export default class PlaybackNamespace extends GMusicNamespace {
     }).observe(document.querySelector(controlsSelectors.playPause), {
       attributes: true,
     });
+
+    // Track Change Proxy Event Listener
+    let lastByLineText = '';
+    const proxyTarget = document.querySelector(nowPlayingSelectors.playerBar).__data__;
+    const proxy = new Proxy(proxyTarget, {
+      set: (obj, prop, value) => {
+        // Try catch because any errors break YTM UI
+        try {
+          if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title) {
+            if (value.bylineText[0].runs[0].text !== lastByLineText) {
+              const currentTrack = this.getCurrentTrack();
+              this.emit('change:track', currentTrack);
+              lastByLineText = value.bylineText[0].runs[0].text;
+            }
+          }
+        } catch (e) { console.error(e); }
+        obj[prop] = value;
+      },
+    });
+    document.querySelector(nowPlayingSelectors.playerBar).__data__ = proxy;
   }
 }
