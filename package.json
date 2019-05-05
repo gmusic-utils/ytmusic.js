@@ -2,7 +2,7 @@
   "name": "ytmusic.js",
   "description": "Browser-side JS library for controlling YouTube Music",
   "version": "6.1.12",
-  "homepage": "https://github.com/gmusic-utils/gmusic.js",
+  "homepage": "https://github.com/gmusic-utils/ytmusic.js",
   "author": {
     "name": "Todd Wolfson",
     "email": "todd@twolfson.com",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gmusic-utils/gmusic.js.git"
+    "url": "git://github.com/gmusic-utils/ytmusic.js.git"
   },
   "bugs": {
-    "url": "https://github.com/gmusic-utils/gmusic.js/issues"
+    "url": "https://github.com/gmusic-utils/ytmusic.js/issues"
   },
   "license": "Unlicense",
   "main": "dist/ytmusic.js",
