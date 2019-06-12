@@ -49,16 +49,16 @@ export default class PlaybackNamespace extends GMusicNamespace {
   }
 
   getTotalTime() {
-    return Math.round(document.querySelector(nowPlayingSelectors.playerBar).__data__.seekableEndSeconds_ * 1000);
+    return Math.round(document.querySelector(nowPlayingSelectors.playerBar).__data.seekableEndSeconds_ * 1000);
   }
 
   getCurrentTrack() {
     const playerBar = document.querySelector(nowPlayingSelectors.playerBar);
     const track = new Track({
       id: null,
-      title: playerBar.__data__.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
-      artist: playerBar.__data__.playerPageWatchMetadata_.byline.runs[0].text || 'Unknown Artist',
-      album: playerBar.__data__.playerPageWatchMetadata_.albumName.runs[0].text || 'Unknown Album',
+      title: playerBar.__data.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
+      artist: playerBar.__data.playerPageWatchMetadata_.byline.runs.map(x => x.text).join('').split('•')[0].trim() || 'Unknown Artist',
+      album: playerBar.__data.playerPageWatchMetadata_.albumName.runs[0].text || 'Unknown Album',
       albumArt: (document.querySelector(nowPlayingSelectors.albumArt) || { src: null }).src,
       duration: this.getTotalTime(),
     });
@@ -77,9 +77,8 @@ export default class PlaybackNamespace extends GMusicNamespace {
   getPlaybackState() {
     if (this._videoEl.paused) {
       return PlaybackNamespace.ENUMS.PlaybackStatus.PAUSED;
-    } else {
-      return PlaybackNamespace.ENUMS.PlaybackStatus.PLAYING;
     }
+    return PlaybackNamespace.ENUMS.PlaybackStatus.PLAYING;
   }
 
   playPause() {
@@ -221,22 +220,23 @@ export default class PlaybackNamespace extends GMusicNamespace {
 
     // Track Change Proxy Event Listener
     let lastByLineText = '';
-    const proxyTarget = document.querySelector(nowPlayingSelectors.playerBar).__data__;
+    const proxyTarget = document.querySelector(nowPlayingSelectors.playerBar).__data;
     const proxy = new Proxy(proxyTarget, {
       set: (obj, prop, value) => {
         // Try catch because any errors break YTM UI
         try {
-          if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title) {
+          if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title && value.bylineText[0].runs.length === 1) {
             if (value.bylineText[0].runs[0].text !== lastByLineText) {
+              lastByLineText = value.bylineText[0].runs[0].text;
               const currentTrack = this.getCurrentTrack();
               this.emit('change:track', currentTrack);
-              lastByLineText = value.bylineText[0].runs[0].text;
             }
           }
         } catch (e) { console.error(e); }
         obj[prop] = value;
+        return true;
       },
     });
-    document.querySelector(nowPlayingSelectors.playerBar).__data__ = proxy;
+    document.querySelector(nowPlayingSelectors.playerBar).__data = proxy;
   }
 }
