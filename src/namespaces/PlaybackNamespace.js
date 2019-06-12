@@ -219,16 +219,16 @@ export default class PlaybackNamespace extends GMusicNamespace {
     });
 
     // Track Change Proxy Event Listener
-    let lastByLineText = '';
+    let lastTrack = null;
     const proxyTarget = document.querySelector(nowPlayingSelectors.playerBar).__data;
     const proxy = new Proxy(proxyTarget, {
       set: (obj, prop, value) => {
         // Try catch because any errors break YTM UI
         try {
-          if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title && value.bylineText[0].runs.length === 1) {
-            if (value.bylineText[0].runs[0].text !== lastByLineText) {
-              lastByLineText = value.bylineText[0].runs[0].text;
-              const currentTrack = this.getCurrentTrack();
+          if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title) {
+            const currentTrack = this.getCurrentTrack();
+            if (lastTrack == null || (lastTrack.title !== currentTrack.title && lastTrack.albumArt !== currentTrack.albumArt)) {
+              lastTrack = currentTrack;
               this.emit('change:track', currentTrack);
             }
           }
