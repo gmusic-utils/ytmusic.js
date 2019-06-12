@@ -55,7 +55,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
   getCurrentTrack() {
     const playerBar = document.querySelector(nowPlayingSelectors.playerBar);
     const track = new Track({
-      id: null,
+      id: playerBar.__data.playerPageWatchMetadata_.trackingParams,
       title: playerBar.__data.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
       artist: playerBar.__data.playerPageWatchMetadata_.byline.runs.map(x => x.text).join('').split('•')[0].trim() || 'Unknown Artist',
       album: playerBar.__data.playerPageWatchMetadata_.albumName.runs[0].text || 'Unknown Album',
@@ -227,7 +227,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
         try {
           if (prop === 'displayedMetadata_' && value.bylineText && value.thumbnailUrl && value.title) {
             const currentTrack = this.getCurrentTrack();
-            if (lastTrack == null || (lastTrack.title !== currentTrack.title && lastTrack.albumArt !== currentTrack.albumArt)) {
+            if (lastTrack == null || (lastTrack.id !== currentTrack.id)) {
               lastTrack = currentTrack;
               this.emit('change:track', currentTrack);
             }
