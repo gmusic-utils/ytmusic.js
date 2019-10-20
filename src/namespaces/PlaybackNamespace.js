@@ -58,10 +58,19 @@ export default class PlaybackNamespace extends GMusicNamespace {
       id: playerBar.__data.playerPageWatchMetadata_.trackingParams,
       title: playerBar.__data.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
       artist: playerBar.__data.playerPageWatchMetadata_.byline.runs.map(x => x.text).join('').split('•')[0].trim() || 'Unknown Artist',
-      album: playerBar.__data.playerPageWatchMetadata_.albumName.runs[0].text || 'Unknown Album',
       albumArt: (document.querySelector(nowPlayingSelectors.albumArt) || { src: null }).src,
       duration: this.getTotalTime(),
     });
+
+    try {
+      if (playerBar.__data.playerPageWatchMetadata_.albumName) {
+        track.album = playerBar.__data.playerPageWatchMetadata_.albumName.runs[0].text;
+      } else {
+        track.album = 'Unknown Album';
+      }
+    } catch (error) {
+      track.album = 'Unknown Album';
+    }
 
     // DEV: The art may be a protocol-relative URL, so normalize it to HTTPS
     if (track.albumArt && track.albumArt.slice(0, 2) === '//') {
@@ -161,7 +170,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
 
   _hookEvents() {
     // Playback Time Event
-    this._progressEl.addEventListener('value-changed', () => {
+    this._progressEl.addEventListener('immediate-value-changed', () => {
       this.emit('change:playback-time', {
         current: this.getCurrentTime(),
         total: this.getTotalTime(),
