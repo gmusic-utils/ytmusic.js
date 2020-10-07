@@ -55,19 +55,15 @@ export default class PlaybackNamespace extends GMusicNamespace {
   getCurrentTrack() {
     const playerBar = document.querySelector(nowPlayingSelectors.playerBar);
     const track = new Track({
-      id: playerBar.__data.playerPageWatchMetadata_.trackingParams,
-      title: playerBar.__data.playerPageWatchMetadata_.title.runs[0].text || 'Unknown Title',
-      artist: playerBar.__data.playerPageWatchMetadata_.byline.runs.map(x => x.text).join('').split('•')[0].trim() || 'Unknown Artist',
+      id: playerBar.__data.currentItem_.trackingParams,
+      title: playerBar.__data.currentItem_.title.runs[0].text || 'Unknown Title',
+      artist: playerBar.__data.currentItem_.longBylineText.runs.map(x => x.text).join('').split('•')[0].trim() || 'Unknown Artist',
       albumArt: (document.querySelector(nowPlayingSelectors.albumArt) || { src: null }).src,
       duration: this.getTotalTime(),
     });
 
     try {
-      if (playerBar.__data.playerPageWatchMetadata_.albumName) {
-        track.album = playerBar.__data.playerPageWatchMetadata_.albumName.runs[0].text;
-      } else {
-        track.album = 'Unknown Album';
-      }
+      track.album = playerBar.__data.currentItem_.longBylineText.runs.map(x => x.text).join('').split('•')[1].trim() || 'Unknown Album',
     } catch (error) {
       track.album = 'Unknown Album';
     }
