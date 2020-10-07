@@ -63,7 +63,7 @@ export default class PlaybackNamespace extends GMusicNamespace {
     });
 
     try {
-      track.album = playerBar.__data.currentItem_.longBylineText.runs.map(x => x.text).join('').split('•')[1].trim() || 'Unknown Album',
+      track.album = playerBar.__data.currentItem_.longBylineText.runs.map(x => x.text).join('').split('•')[1].trim() || 'Unknown Album'
     } catch (error) {
       track.album = 'Unknown Album';
     }
