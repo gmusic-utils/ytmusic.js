@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import gulp from 'gulp';
-
+import { dest, series, src } from 'gulp';
 import babel from 'gulp-babel';
 import browserify from 'gulp-browserify';
 import rename from 'gulp-rename';
@@ -10,26 +9,26 @@ const files = {
   rawJS: ['./src/**/*.js'],
 };
 
-gulp.task('transpile', () =>
-  gulp.src(files.rawJS)
+const transpileTask = () => {
+  return src(files.rawJS)
     .pipe(babel())
-    .pipe(gulp.dest('./build'))
-);
+    .pipe(dest('./build'))
+};
 
-gulp.task('browserify', ['transpile'], () =>
-  gulp.src('./build/main.js')
+const browserifyTask = () => {
+  return src('./build/main.js')
     .pipe(browserify({
       standalone: 'YTMusic',
     }))
     .pipe(rename('ytmusic.js'))
-    .pipe(gulp.dest('./dist'))
-);
+    .pipe(dest('./dist'))
+}
 
-gulp.task('uglify', ['browserify'], () =>
-  gulp.src('./dist/ytmusic.js')
+const uglifyTask = () => {
+  return src('./dist/ytmusic.js')
     .pipe(uglify())
     .pipe(rename('ytmusic.min.js'))
-    .pipe(gulp.dest('./dist'))
-);
+    .pipe(dest('./dist'))
+}
 
-gulp.task('build', ['uglify']);
+exports.build = series(transpileTask, browserifyTask, uglifyTask);
