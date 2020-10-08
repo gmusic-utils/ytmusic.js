@@ -1,5 +1,3 @@
-import assert from 'assert';
-
 import GMusicNamespace from '../GMusicNamespace';
 import { ratingSelectors } from '../constants/selectors';
 import click from '../utils/click';
