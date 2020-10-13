@@ -1,7 +1,7 @@
 {
   "name": "ytmusic.js",
   "description": "Browser-side JS library for controlling YouTube Music",
-  "version": "6.2.1",
+  "version": "6.2.2",
   "homepage": "https://github.com/gmusic-utils/ytmusic.js",
   "author": {
     "name": "Todd Wolfson",
