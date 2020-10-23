@@ -46,11 +46,11 @@ decided to make it a major release.
 
 ## Getting Started
 
-Install the module with: `npm install gmusic.js`
+Install the module with: `npm install ytmusic`
 
 ```js
 // Load and initialize GMusic
-var GMusic = require('gmusic.js');
+var GMusic = require('ytmusic');
 window.gmusic = new GMusic(window);
 
 // Access volume
@@ -59,7 +59,7 @@ window.gmusic.volume.getVolume(); // 50 (ranges from 0 to 100)
 
 ## Documentation
 
-`gmusic.js` exposes a constructor, `GMusic` as its `module.exports` (`window.GMusic` for
+`ytmusic.js` exposes a constructor, `GMusic` as its `module.exports` (`window.GMusic` for
 `bower`/vanilla).
 
 ### `new GMusic()`
@@ -461,17 +461,7 @@ npm test
 # npm run test-windows
 ```
 
-#### Attribution
-
-We have an automatic build setup on Travis CI that will run every day to catch changes made by
-Google as quick as possible. These tests make use of BrowserStack's services to remotely run
-Selenium tests, huge thanks to [BrowserStack][] for the support of Open Source projects like this one!
-
-[BrowserStack]: https://www.browserstack.com/
-
-<img src="https://cdn.rawgit.com/gilbarbara/logos/081a89a93b6af2bba5cf4eeace7a5c430785c003/logos/browserstack.svg" height="100px" alt="BrowserStack Logo">
-
-##### Nightlies
+#### Nightlies
 
 Nightly builds are triggered on Travis CI by a third party service service [Nightli.es][]
 
@@ -506,7 +496,7 @@ All files were originally licensed at `5ccfa7b3c7bc5231284f8e42c6a2f2e7fe1e1532`
 license. This can be viewed its [`LICENSE.md`][]. It has been renamed to [LICENSE-MIT][] for ease
 of disambiguity.
 
-[`LICENSE.md`]: https://github.com/gmusic-utils/gmusic.js/blob/5ccfa7b3c7bc5231284f8e42c6a2f2e7fe1e1532/LICENSE.md
+[`LICENSE.md`]: https://raw.githubusercontent.com/gmusic-utils/ytmusic.js/master/LICENSE-MIT
 [LICENSE-MIT]: LICENSE-MIT
 
 After this commit, all alterations made by Todd Wolfson and future contributors are released to the
