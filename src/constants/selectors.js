@@ -4,7 +4,7 @@ export const volumeSelectors = {
 
 export const playbackSelectors = {
   video: 'video.video-stream',
-  progress: 'ytmusic-player-bar > paper-slider.ytmusic-player-bar',
+  progress: '#progress-bar',
 };
 
 export const podcastSelectors = {
