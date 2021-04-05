@@ -46,11 +46,11 @@ decided to make it a major release.
 
 ## Getting Started
 
-Install the module with: `npm install ytmusic`
+Install the module with: `npm install ytmusic.js`
 
 ```js
 // Load and initialize GMusic
-var GMusic = require('ytmusic');
+var GMusic = require('ytmusic.js');
 window.gmusic = new GMusic(window);
 
 // Access volume
